@@ -95,7 +95,7 @@ def main():
     app.add_handler(MessageHandler(filters=filters.VOICE, callback=transcribe_audio))
 
     # Start the bot
-    print("Bot is running! \o/")
+    print("Bot is running! :)")
     app.run_polling()
 
 
