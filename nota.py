@@ -80,11 +80,9 @@ async def transcribe_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def main():
-    # Create the bot application
     print("Loading the bot...")
     app = ApplicationBuilder().token(HTTP_API).build()
 
-    # Load the Whisper model and store it in bot_data for later use
     print(f"Loading the Whisper model: {WHISPER_MODEL}")
     app.bot_data["model"] = whisper.load_model(WHISPER_MODEL)
 
@@ -94,7 +92,6 @@ def main():
     # Handle voice messages and transcribe them
     app.add_handler(MessageHandler(filters=filters.VOICE, callback=transcribe_audio))
 
-    # Start the bot
     print("Bot is running! :)")
     app.run_polling()
 
