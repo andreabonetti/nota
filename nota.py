@@ -83,7 +83,7 @@ def main():
     print("Loading the bot...")
     app = ApplicationBuilder().token(HTTP_API).build()
 
-    print(f"Loading the Whisper model: {WHISPER_MODEL}")
+    print(f"Loading the Whisper model: {WHISPER_MODEL}...")
     app.bot_data["model"] = whisper.load_model(WHISPER_MODEL)
 
     # /ping returns "pong" to check if the bot is alive
