@@ -29,8 +29,8 @@ async def ping(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("pong")
 
 
-def save_transcription_to_file(transcription: str):
-    """Save the transcription to a text file named YYYY_MM_DD.md."""
+def save_message_to_file(message_text: str):
+    """Save a message to a text file named YYYY_MM_DD.md."""
     now = datetime.now()
     day = now.strftime("%Y_%m_%d")  # YYYY_MM_DD
     timestamp = now.strftime("%H:%M")  # HH:MM
@@ -44,8 +44,8 @@ def save_transcription_to_file(transcription: str):
     with note_path.open("a", encoding="utf-8") as text_file:
         if is_new_file:
             text_file.write(f"# {day}\n\n")
-        # there's one space already before transcription
-        text_file.write(f"- [{timestamp}]{transcription}\n")
+        # there's one space already before the message text
+        text_file.write(f"- [{timestamp}] {message_text}\n")
 
 
 async def transcribe_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -73,10 +73,19 @@ async def transcribe_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(transcription)
 
         # Save the transcription to the daily markdown note
-        save_transcription_to_file(transcription)
+        save_message_to_file(transcription)
 
     finally:
         os.remove(filename)
+
+
+async def store_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Stores a plain text message."""
+    if not is_allowed(update):
+        return
+
+    message_text = update.message.text
+    save_message_to_file(message_text)
 
 
 def main():
@@ -91,6 +100,9 @@ def main():
 
     # Handle voice messages and transcribe them
     app.add_handler(MessageHandler(filters=filters.VOICE, callback=transcribe_audio))
+
+    # Handle plain text messages, but ignore commands
+    app.add_handler(MessageHandler(filters=filters.TEXT & ~filters.COMMAND, callback=store_text_message))
 
     print("Bot is running! :)")
     app.run_polling()
